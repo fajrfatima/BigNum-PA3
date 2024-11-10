@@ -11,8 +11,13 @@ using namespace std;
 class BigNum 
 {
     protected:
-        int number;
-        string numstring;
+        std:: vector <char> numbers;
+        bool isFalse;
+
+        void fromString(const std:: string &str);
+        void fromInt(int num);
+        static int compareNum(const BigNum &a, const BigNum &b);
+        void leadingZeros();
 
     public:
     // Constructors

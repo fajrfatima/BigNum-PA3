@@ -1,10 +1,13 @@
 #include "BigNum.h"
 
 //IMPLEMENT CLASS METHODS HERE
+class BigNum{
+
 
 
 
 //CONSTRUCTOR CODE
+
 
 
 
@@ -45,4 +48,4 @@
 
 //HELPER FUNCTION CODE
 
-
+};
