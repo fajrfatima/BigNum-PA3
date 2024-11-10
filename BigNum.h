@@ -12,10 +12,10 @@ class BigNum
 {
     protected:
         std:: vector <char> numbers;
-        bool isFalse;
+        bool negative;
 
-        void fromString(const std:: string &str);
-        void fromInt(int num);
+        void nstring(const std:: string &str);
+        void integer(int num);
         static int compareNum(const BigNum &a, const BigNum &b);
         void leadingZeros();
 
