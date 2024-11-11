@@ -61,10 +61,137 @@ bool operator!=(int lhs, const BigNum& rhs) {
 // addition
 // subtraction
 // multiplication
+BigNum BigNum::operator+(const BigNum& other) const {
+        if (negative != other.negative) {
+        // If signs are different, perform subtraction
+        BigNum temp = other;
+        temp.negative = !temp.negative;
+        return *this - temp;
+    }
 
+    BigNum result;
+    result.numbers.clear();
+    result.negative = negative;
+
+    int carry = 0;
+    size_t maxLen = numbers.size();
+    if (other.numbers.size() > maxLen) maxLen = other.numbers.size();
+
+    for (size_t i = 0; i < maxLen || carry; ++i) {
+        int sum = carry;
+        if (i < numbers.size()) sum += numbers[i] - '0';
+        if (i < other.numbers.size()) sum += other.numbers[i] - '0';
+        
+        result.numbers.push_back('0' + (sum % 10));
+        carry = sum / 10;
+    }
+
+    result.leadingZeros();
+    return result;
+}
+
+BigNum BigNum::operator-(const BigNum& other) const {
+    if (negative != other.negative) {
+        // If signs are different, perform addition
+        BigNum temp = other;
+        temp.negative = !temp.negative;
+        return *this + temp;
+    }
+
+    // Determine which number has larger absolute value
+    int cmp = compareNum(*this, other);
+    if (cmp == 0) return BigNum(0);
+
+    // Ensure we subtract smaller from larger
+    const BigNum* larger;
+    const BigNum* smaller;
+    if (cmp > 0) {
+        larger = this;
+        smaller = &other;
+    } else {
+        larger = &other;
+        smaller = this;
+    }
+
+    BigNum result;
+    result.numbers.clear();
+    result.negative = (cmp < 0) != negative;
+
+    int borrow = 0;
+    for (size_t i = 0; i < larger->numbers.size(); ++i) {
+        int diff = (larger->numbers[i] - '0') - borrow;
+        if (i < smaller->numbers.size()) {
+            diff -= (smaller->numbers[i] - '0');
+        }
+
+        if (diff < 0) {
+            diff += 10;
+            borrow = 1;
+        } else {
+            borrow = 0;
+        }
+
+        result.numbers.push_back('0' + diff);
+    }
+
+    result.leadingZeros();
+    return result;
+}
+
+BigNum BigNum::operator*(const BigNum& other) const {
+    BigNum result;
+    result.numbers.clear();
+    result.numbers.resize(numbers.size() + other.numbers.size(), '0');
+    result.negative = negative != other.negative;
+
+    for (size_t i = 0; i < numbers.size(); ++i) {
+        int carry = 0;
+        for (size_t j = 0; j < other.numbers.size() || carry; ++j) {
+            int product = (result.numbers[i + j] - '0') + carry;
+            if (j < other.numbers.size()) {
+                product += (numbers[i] - '0') * (other.numbers[j] - '0');
+            }
+            result.numbers[i + j] = '0' + (product % 10);
+            carry = product / 10;
+        }
+    }
+
+    result.leadingZeros();
+    return result;
+}
 
 //SPECIAL OPERATOR
 // digit product operator
+BigNum BigNum::operator/(const BigNum& other) const {
+      std::vector<char> result_digits;
+        
+        // Since we're guaranteed same length numbers, we can iterate through both vectors
+        for(int i = 0; i < numbers.size(); i++) {
+            // Get digits from both numbers and convert to integers
+            int digit1 = numbers[i] - '0';
+            int digit2 = other.numbers[i] - '0';
+            
+            // Calculate product
+            int product = digit1 * digit2;
+            
+            // Convert product to string
+            std::string prod_str = std::to_string(product);
+            
+            // Add each digit of the product to the result
+            for(int j = prod_str.length() - 1; j >= 0; j--) {
+                result_digits.push_back(prod_str[j]);
+            }
+        }
+        
+        // Create a new BigNum using the string representation of the result
+        std::string result_str;
+        for(int i = result_digits.size() - 1; i >= 0; i--) {
+            result_str += result_digits[i];
+        }
+        
+        return BigNum(result_str);
+    }
+
 
 //POST & PREFIX OPERATORS
 //postfix
@@ -190,10 +317,10 @@ void BigNum::leadingZeros() {
 }
 
 // Helper function to convert string to BigNum
-void BigNum::nstring(const std::string& str) {
-    std::string trimmed;
-    size_t start = 0;
-    size_t end = str.length();
+void BigNum :: nstring(const std::string& str) {
+    std :: string substring;
+    int start = 0;
+    int end = str.length();
     
     // Skip leading whitespace
     while (start < end && (str[start] == ' ' || str[start] == '\t' || 
@@ -207,19 +334,19 @@ void BigNum::nstring(const std::string& str) {
         end--;
     }
     
-    trimmed = str.substr(start, end - start);
+    substring = str.substr(start, end - start);
 
     negative = false;
-    if (!trimmed.empty() && trimmed[0] == '-') {
+    if (!substring.empty() && substring[0] == '-') {
         negative = true;
-        trimmed = trimmed.substr(1);
+        substring = substring.substr(1);
     }
 
     numbers.clear();
     // Store digits in reverse order for easier arithmetic
-    for (int i = trimmed.length() - 1; i >= 0; --i) {
-        if (trimmed[i] >= '0' && trimmed[i] <= '9') {
-            numbers.push_back(trimmed[i]);
+    for (int i = substring.length() - 1; i >= 0; --i) {
+        if (substring[i] >= '0' && substring[i] <= '9') {
+            numbers.push_back(substring[i]);
         }
     }
 

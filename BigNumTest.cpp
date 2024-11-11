@@ -192,6 +192,7 @@ int testSpecialOperator()
     } 
     else 
     {
+        cout << "Output: " << n3 << endl;
         cout << "Digit Product Test 1 failed." << endl;
     }
 
@@ -206,6 +207,7 @@ int testSpecialOperator()
     } 
     else 
     {
+        cout << "Output: " << n6 << endl;
         cout << "Digit Product Test 2 failed." << endl;
     }
 
@@ -219,6 +221,7 @@ int testSpecialOperator()
     } 
     else 
     {
+        cout << "Output: " << n9 << endl;
         cout << "Digit Product Test 3 failed." << endl;
     }
 

@@ -11,7 +11,7 @@ using namespace std;
 class BigNum 
 {
     protected:
-        std:: vector <char> numbers;
+        std::vector <char> numbers;
         bool negative;
 
         void nstring(const std:: string &str);
